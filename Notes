@@ -1,0 +1,6 @@
+python -m venv .venv
+.\.venv\Scripts\activate
+
+ Remove-Item -Recurse -Force .venv
+ pip install django djangorestframework django-cors-headers
+ python manage.py runserver
