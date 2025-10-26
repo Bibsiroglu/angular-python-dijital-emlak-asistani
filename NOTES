@@ -1,6 +1,8 @@
 mkdir src/app/models
 ni src/app/models/mulk.interface.ts
 
+ng generate service services/portfoy
+
 git init
 git remote add origin https://github.com/Bibsiroglu_ADINIZ/angular-python-dijital-emlak-asistani.git
 git add .
@@ -8,3 +10,5 @@ git commit -m "feat: Backend ve Frontend temel modelleri eklendi (Musteri ve Mul
 git push -u origin main
 
 git branch -M main
+
+New-Item urls.py -ItemType File

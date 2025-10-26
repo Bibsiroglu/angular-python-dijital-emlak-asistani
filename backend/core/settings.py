@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework', # <<< Bu olmalı
     
     # Kendi uygulamanız: En güvenlisi AppConfig yolunu kullanmaktır
-    'portfoy_yonetimi.apps.PortfoyYonetimiConfig',
+    'portfoy_yonetimi',
 ]
 
 MIDDLEWARE = [
