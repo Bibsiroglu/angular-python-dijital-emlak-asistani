@@ -6,3 +6,5 @@ git remote add origin https://github.com/Bibsiroglu_ADINIZ/angular-python-dijita
 git add .
 git commit -m "feat: Backend ve Frontend temel modelleri eklendi (Musteri ve Mulk)"
 git push -u origin main
+
+git branch -M main
