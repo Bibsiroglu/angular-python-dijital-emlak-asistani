@@ -1,12 +1,18 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router'; // RouterOutlet import'u kalmalı
+
+// MulkListesiComponent'i buradan çıkardık, çünkü RouterOutlet onu yönetecek.
+// import { MulkListesiComponent } from './components/mulk-listesi/mulk-listesi.ts'; 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css'],
+  
+  // SADECE ROUTEROUTLET'İ TUTUN (veya tüm modülleri)
+  imports: [RouterOutlet], 
 })
-export class App {
-  protected readonly title = signal('emlak-ui');
+export class AppComponent {
+  title = 'emlak-ui';
 }

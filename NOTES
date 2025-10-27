@@ -12,3 +12,7 @@ git push -u origin main
 git branch -M main
 
 New-Item urls.py -ItemType File
+
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python manage.py runserver

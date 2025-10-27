@@ -2,7 +2,9 @@
 
 from django.db import models
 
+# ===============================================
 # MÜŞTERİ YÖNETİMİ
+# ===============================================
 class Musteri(models.Model):
     # Tür seçenekleri
     TUR_SECENEKLERI = (
@@ -24,7 +26,9 @@ class Musteri(models.Model):
         return f"{self.ad_soyad} ({self.musteri_turu})"
 
 
+# ===============================================
 # PORTFÖY YÖNETİMİ (Mülkler)
+# ===============================================
 class Mulk(models.Model):
     # Tür seçenekleri
     TUR_SECENEKLERI = (
@@ -64,4 +68,24 @@ class Mulk(models.Model):
 
     def __str__(self):
         return f"{self.baslik} ({self.get_durum_display()})"
-    # backend/core/settings.py
+    
+
+# ===============================================
+# 3. YENİ FOTOĞRAF MODELİ (Mulk sınıfının dışında!)
+# ===============================================
+class MulkFotografi(models.Model):
+    mulk = models.ForeignKey(Mulk, 
+                             on_delete=models.CASCADE, 
+                             related_name='fotograflar') # Bu fotoğrafların hangi mülke ait olduğunu belirtir.
+                             
+    foto = models.ImageField(upload_to='mulk_fotograflari/') # Gerçek resim dosyası
+    
+    aciklama = models.CharField(max_length=255, blank=True, null=True) # Opsiyonel açıklama
+    
+    varsayilan = models.BooleanField(default=False) # Eğer varsa, ilk fotoğrafı belirlemek için
+    
+    def __str__(self):
+        return f"{self.mulk.baslik} - Fotoğraf {self.id}"
+    
+    class Meta:
+        verbose_name_plural = "Mülk Fotoğrafları"
