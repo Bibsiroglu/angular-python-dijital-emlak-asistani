@@ -1,19 +1,20 @@
-# backend/portfoy_yonetimi/admin.py
-
 from django.contrib import admin
-from .models import Mulk, Musteri
+from .models import Musteri, Mulk, MulkFotografi # Yeni modeli import edin
 
-# İsteğe bağlı: Admin panelinde daha güzel listeleme için
+# 1. Galeri için arayüz (Inline) tanımlıyoruz
+class MulkFotografiInline(admin.TabularInline): # TabularInline, daha kompakt bir görünüm sağlar
+    model = MulkFotografi
+    extra = 1 # Varsayılan olarak bir boş alan göster
+
+# 2. Mulk modelini bu galeri arayüzü ile kaydediyoruz
 class MulkAdmin(admin.ModelAdmin):
-    list_display = ('baslik', 'mülk_turu', 'durum', 'fiyat', 'sehir', 'guncelleme_tarihi')
+    list_display = ('baslik', 'mülk_turu', 'fiyat', 'durum')
     list_filter = ('mülk_turu', 'durum', 'sehir')
-    search_fields = ('baslik', 'adres', 'aciklama')
+    search_fields = ('baslik', 'aciklama')
+    inlines = [MulkFotografiInline] # <-- Galeri arayüzünü buraya ekliyoruz
 
-class MusteriAdmin(admin.ModelAdmin):
-    list_display = ('ad_soyad', 'musteri_turu', 'telefon', 'kayit_tarihi')
-    list_filter = ('musteri_turu',)
-    search_fields = ('ad_soyad', 'telefon', 'eposta')
+# 3. Müşteri modelini de admin'e kaydediyoruz
+admin.site.register(Musteri)
+admin.site.register(Mulk, MulkAdmin) # Mulk modelini yeni admin sınıfı ile kaydedin
 
-
-admin.site.register(Mulk, MulkAdmin)
-admin.site.register(Musteri, MusteriAdmin)
+# MulkFotografi modelini ayriyetten kaydetmeye gerek yok, Mulk üzerinden yönetilecek.
