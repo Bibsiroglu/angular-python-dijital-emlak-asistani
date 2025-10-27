@@ -1,0 +1,27 @@
+<h2>Portföydeki Mülkler</h2>
+
+<div *ngIf="yukleniyor" style="color: blue;">
+  Mülkler yükleniyor...
+</div>
+
+<div *ngIf="hata" style="color: red; border: 1px solid red; padding: 10px;">
+  HATA: {{ hata }}
+</div>
+
+<div *ngIf="!yukleniyor && mulkler.length > 0">
+  <ul style="list-style: none; padding: 0;">
+    <li *ngFor="let mulk of mulkler" style="border: 1px solid #ccc; margin-bottom: 10px; padding: 10px;">
+      <div>
+        <strong>{{ mulk.baslik }}</strong> ({{ mulk.mulk_turu }})<br>
+        <small>{{ mulk.sehir }}, {{ mulk.ilce }}</small>
+      </div>
+      <p>
+        Fiyat: <strong>{{ mulk.fiyat }} TL</strong> | Durum: {{ mulk.durum }} | m²: {{ mulk.net_m2 }}
+      </p>
+    </li>
+  </ul>
+</div>
+
+<div *ngIf="!yukleniyor && mulkler.length === 0" style="color: orange;">
+  Portföyde kayıtlı mülk bulunmamaktadır. (Lütfen Django Admin panelinden kayıt eklediğinizden emin olun)
+</div>
