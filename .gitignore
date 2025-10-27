@@ -1,13 +1,9 @@
-# Python
-.venv/
-__pycache__/
+# Veritabanı dosyaları
+db.sqlite3
+
+# Python/Django ile ilgili dosyalar
 *.pyc
-db.sqlite3 # SQLite veritabanını dışarıda bırakmak önemlidir!
-
-# Node/Angular
-node_modules/
-dist/
-.angular/
-
-# Editör dosyaları
-.vscode/
+__pycache__/
+.venv/
+/venv/
+media/  # Upload edilen dosyaların tutulduğu dizin
