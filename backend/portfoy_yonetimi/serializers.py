@@ -5,6 +5,7 @@ class MulkFotografiSerializer(serializers.ModelSerializer):
     class Meta:
         model = MulkFotografi
         fields = ('foto', 'aciklama') # 'foto' burada fotoğrafın URL'sini verecek
+from .models import Musteri, Mulk
 
 class MusteriSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,3 +18,6 @@ class MulkSerializer(serializers.ModelSerializer):
         model = Mulk
         fields = ('id', 'baslik', 'durum', 'fiyat', 'sehir', 'ilce', 'brut_m2', 'net_m2', 'oda_sayisi', 'fotograflar')
 
+    class Meta:
+        model = Mulk
+        fields = '__all__' # Tüm alanları dahil et

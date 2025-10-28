@@ -1,5 +1,3 @@
-// src/app/app.routes.ts
-
 import { Routes } from '@angular/router';
 
 import { MulkListesiComponent } from './components/mulk-listesi/mulk-listesi'; 
@@ -15,12 +13,5 @@ export const routes: Routes = [
     path: 'mulkler', 
     component: MulkListesiComponent
   },
-  { 
-    path: 'mulk-ekle', 
-    component: MulkEkle
-  },
-  { 
-    path: '**', 
-    redirectTo: 'mulkler' 
-  }
+
 ];
