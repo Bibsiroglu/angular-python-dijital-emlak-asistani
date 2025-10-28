@@ -1,16 +1,24 @@
-<nav class="nav-links">
-    <ul>
-        <li>
-            <a [routerLink]="['/']" routerLinkActive="active-link">
-                🏠 Mülk Listesi
-            </a>
-        </li>
-        
-        <li>
-            <a [routerLink]="['/dashboard']" routerLinkActive="active-link">
-                📊 Dashboard
-            </a>
-        </li>
-        
+<nav class="navbar-container">
+    
+    <div class="navbar-brand">
+        <a [routerLink]="['/']">
+            🏡 Dijital Emlak Asistanı
+        </a>
+    </div>
+
+    <div class="nav-links">
+        <ul>
+            <li>
+                <a [routerLink]="['/']" routerLinkActive="active-link">
+                    🏠 Mülk Listesi
+                </a>
+            </li>
+            
+            <li>
+                <a [routerLink]="['/dashboard']" routerLinkActive="active-link">
+                    📊 Dashboard
+                </a>
+            </li>
         </ul>
+    </div>
 </nav>
