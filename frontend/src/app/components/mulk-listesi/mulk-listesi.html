@@ -1,1 +1,51 @@
-<p>mulk-listesi works!</p>
+<div class="row">
+    <div class="col-12">
+        <h2>🏡 Mülk Listesi</h2>
+        <hr>
+        
+        <div *ngIf="yukleniyor" class="alert alert-info">Mülkler yükleniyor...</div>
+        <div *ngIf="hataMesaji" class="alert alert-danger">{{ hataMesaji }}</div>
+        
+        <div *ngIf="!yukleniyor && !hataMesaji && mulkler.length === 0" class="alert alert-warning">
+            Henüz kayıtlı mülk yok. <a routerLink="/mulk-ekle">Yeni Mülk Ekleyin.</a>
+        </div>
+
+        <div *ngIf="mulkler.length > 0 && !yukleniyor" class="table-responsive">
+            
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fotoğraf</th> 
+                        <th>Başlık</th>
+                        <th>Durum</th>
+                        <th>Fiyat</th>
+                        <th>Konum</th>
+                        <th>M² (Brüt/Net)</th>
+                        <th>Oda Sayısı</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let mulk of mulkler">
+                        <td>{{ mulk.id }}</td>
+                        <td>
+                            <img 
+                                *ngIf="mulk.fotograflar && mulk.fotograflar.length > 0" 
+                                [src]="mulk.fotograflar[0].foto" 
+                                alt="{{ mulk.baslik }}" 
+                                style="width: 100px; height: 75px; object-fit: cover; border-radius: 4px;">
+                            <span *ngIf="!mulk.fotograflar || mulk.fotograflar.length === 0" class="text-muted">Fotoğraf Yok</span>
+                        </td>
+                        <td>{{ mulk.baslik }}</td>
+                        <td><span class="badge bg-primary">{{ mulk.durum }}</span></td>
+                        <td>{{ formatFiyat(mulk.fiyat) }}</td>
+                        <td>{{ mulk.sehir }} / {{ mulk.ilce }}</td>
+                        <td>{{ mulk.brut_m2 }} / {{ mulk.net_m2 }}</td> 
+                        <td>{{ mulk.oda_sayisi }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
