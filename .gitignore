@@ -1,0 +1,9 @@
+# Veritabanı dosyaları
+db.sqlite3
+
+# Python/Django ile ilgili dosyalar
+*.pyc
+__pycache__/
+.venv/
+/venv/
+media/  # Upload edilen dosyaların tutulduğu dizin

@@ -1,0 +1,24 @@
+mkdir src/app/models
+ni src/app/models/mulk.interface.ts
+
+ng generate service services/portfoy
+
+git init
+git remote add origin https://github.com/Bibsiroglu/angular-python-dijital-emlak-asistani.git
+git add .
+git commit -m "feat: Backend ve Frontend temel modelleri eklendi (Musteri ve Mulk)"
+git push -u origin main
+
+git branch -M main
+
+New-Item urls.py -ItemType File
+Remove-Item...
+
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python manage.py runserver
+pip install -r requirements.txt
+pip install Pillow
+
+python manage.py makemigrations portfoy_yonetimi
+python manage.py migrate
