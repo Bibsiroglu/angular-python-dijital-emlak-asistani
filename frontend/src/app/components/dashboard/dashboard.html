@@ -1,0 +1,47 @@
+<div class="dashboard-container">
+    <h2>Emlak Portföy Yönetimi - İstatistiksel Özet</h2>
+    
+    <div *ngIf="isLoading" class="loading-message">
+        <p>Veriler yükleniyor, lütfen bekleyin...</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-box">
+        Hata: {{ errorMessage }}
+    </div>
+
+    <div *ngIf="istatistikler && !errorMessage" class="card-grid">
+        
+        <div class="card card-primary">
+            <h3>Toplam Mülk</h3>
+            <p class="value">{{ istatistikler.toplam_mulk }}</p>
+            <p class="label">Aktif Envanter</p>
+        </div>
+        
+        <div class="card card-secondary">
+            <h3>Ortalama Fiyat</h3>
+            <p class="value">{{ istatistikler.ortalama_fiyat | currency:'TRY':'symbol':'1.2-2':'tr' }}</p>
+            <p class="label">Envanter Ortalaması</p>
+        </div>
+        
+        <div class="card card-tertiary">
+            <h3>Toplam Değer</h3>
+            <p class="value">{{ istatistikler.toplam_envanter_degeri | currency:'TRY':'symbol':'1.2-0':'tr' }}</p>
+            <p class="label">Tahmini Pazar Değeri</p>
+        </div>
+    </div>
+    
+    <div *ngIf="istatistikler && !errorMessage" class="status-section">
+        <h3>Mülk Durumu Dağılımı</h3>
+        <ul class="status-list">
+            <li *ngFor="let item of istatistikler.durum_dagilimi">
+                <span class="status-name">{{ item.durum }}</span>
+                <span class="status-count">{{ item.sayi }} Adet</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="action-links">
+        <a [routerLink]="['/mulkler']" class="btn-action">Tüm Mülkleri Gör</a>
+    </div>
+
+</div>

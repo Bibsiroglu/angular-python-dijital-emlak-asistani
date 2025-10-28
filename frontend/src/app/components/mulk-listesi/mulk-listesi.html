@@ -29,12 +29,12 @@
                     <tr *ngFor="let mulk of mulkler">
                         <td>{{ mulk.id }}</td>
                         <td>
-                            <img 
-                                *ngIf="mulk.fotograflar && mulk.fotograflar.length > 0" 
-                                [src]="mulk.fotograflar[0].foto" 
-                                alt="{{ mulk.baslik }}" 
-                                style="width: 100px; height: 75px; object-fit: cover; border-radius: 4px;">
-                            <span *ngIf="!mulk.fotograflar || mulk.fotograflar.length === 0" class="text-muted">Fotoğraf Yok</span>
+                        <ng-container *ngIf="mulk.fotograflar && mulk.fotograflar.length > 0">
+                            <img [src]="'http://localhost:8000' + mulk.fotograflar[0].foto" 
+                                alt="{{ mulk.baslik }} fotoğrafı" 
+                                style="width: 50px; height: 50px; object-fit: cover;">
+                            </ng-container>
+                            <span *ngIf="!mulk.fotograflar || mulk.fotograflar.length === 0">Fotoğraf Yok </span>
                         </td>
                         <td>{{ mulk.baslik }}</td>
                         <td><span class="badge bg-primary">{{ mulk.durum }}</span></td>

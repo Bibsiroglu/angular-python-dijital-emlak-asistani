@@ -1,4 +1,5 @@
 from django.urls import path, include
+from . import views
 from rest_framework.routers import DefaultRouter
 from .views import MusteriViewSet, MulkViewSet
 
@@ -12,6 +13,8 @@ router.register(r'mulkler', MulkViewSet)
 
 # Eğer Django projenizin ana urls.py'sinde 'api/' yolu tanımlanmışsa
 urlpatterns = [
-    path('', include(router.urls)),
+   
+    path('mulkler/', views.mulk_listesi, name='mulk_listesi'),
+    path('istatistikler/', views.istatistik_listesi, name='istatistik_listesi'),
 ]
 # Eğer projenizin ana urls.py'sinde uygulamanız doğrudan takılıysa, urlpatterns = router.urls
