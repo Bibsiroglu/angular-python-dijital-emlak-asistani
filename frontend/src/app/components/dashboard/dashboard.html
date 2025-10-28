@@ -19,19 +19,32 @@
         
         <div class="card card-secondary">
             <h3>Ortalama Fiyat</h3>
-            <p class="value">{{ istatistikler.ortalama_fiyat | currency:'TRY':'symbol':'1.2-2':'tr' }}</p>
+            <p class="value">{{ istatistikler.ortalama_fiyat | currency:'TRY':'symbol':'1.0-2':'tr' }}</p>
             <p class="label">Envanter Ortalaması</p>
         </div>
         
         <div class="card card-tertiary">
             <h3>Toplam Değer</h3>
-            <p class="value">{{ istatistikler.toplam_envanter_degeri | currency:'TRY':'symbol':'1.2-0':'tr' }}</p>
+            <p class="value">{{ istatistikler.toplam_envanter_degeri | currency:'TRY':'symbol':'1.0-0':'tr' }}</p>
             <p class="label">Tahmini Pazar Değeri</p>
         </div>
     </div>
     
-    <div *ngIf="istatistikler && !errorMessage" class="status-section">
+    <div *ngIf="istatistikler && !errorMessage" class="chart-section">
         <h3>Mülk Durumu Dağılımı</h3>
+        
+        <div class="chart-wrapper">
+            <canvas *ngIf="durumDagilimiChartData.datasets[0].data.length > 0"
+                    baseChart
+                    [data]="durumDagilimiChartData" 
+                    [options]="durumDagilimiChartOptions"
+                    [type]="durumDagilimiChartType">
+            </canvas>
+            <p *ngIf="!durumDagilimiChartData.datasets[0].data.length" class="no-data-message">
+                Grafik verisi bulunamadı.
+            </p>
+        </div>
+        
         <ul class="status-list">
             <li *ngFor="let item of istatistikler.durum_dagilimi">
                 <span class="status-name">{{ item.durum }}</span>

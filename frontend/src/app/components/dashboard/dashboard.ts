@@ -1,38 +1,67 @@
 import { Component, OnInit } from '@angular/core';
-// Gerekli Angular modülleri
-import { CommonModule, CurrencyPipe } from '@angular/common'; // NgIf, NgFor ve Pipe'lar için
-import { RouterLink } from '@angular/router'; // Yönlendirme için (Navigasyon Menüsü veya Linkler)
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 // Servis ve Modeller
 import { PortfoyService } from '../../services/portfoy';
-import { IstatistikVerisi } from '../../models/istatistik.interface'; // Yeni, ayrı modelden import
+import { IstatistikVerisi } from '../../models/istatistik.interface'; 
+
+// === KRİTİK GRAFİK IMPORTLARI VE KAYIT ===
+// Chart.js tiplerini doğru import ediyoruz
+import { ChartConfiguration, ChartOptions, ChartType, ChartData, TooltipItem, Chart, registerables } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts'; 
+
+// KRİTİK: "doughnut is not a registered controller" hatasını çözmek için
+Chart.register(...registerables); 
+// =========================================
 
 @Component({
   selector: 'app-dashboard',
-  // Projeniz büyük ihtimalle standalone component yapısını kullanıyor.
-  // Eğer kullanmıyorsa 'standalone: true' ve 'imports' satırlarını kaldırıp
-  // AppModule'a eklemeniz gerekir.
   standalone: true, 
   imports: [
     CommonModule, 
     RouterLink,
-    // Angular'ın CurrencyPipe'ını kullanmak için imports'a ekliyoruz
-    CurrencyPipe
+    CurrencyPipe,
+    BaseChartDirective // Grafik bileşenini imports'a ekliyoruz
   ], 
-  
-  templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css']
+  // Lütfen dosya adınızın 'dashboard.html' veya 'dashboard.component.html' olduğundan emin olun.
+  templateUrl: './dashboard.html', 
+  styleUrls: ['./dashboard.css'] 
 })
 export class DashboardComponent implements OnInit {
   
-  /** Django API'sinden çekilen istatistik verisini tutar. */
   istatistikler: IstatistikVerisi | undefined;
-  
-  /** Verilerin yüklenip yüklenmediğini kontrol eder. */
   isLoading = true;
-  
-  /** Hata mesajlarını tutar */
   errorMessage: string | null = null;
+
+  // === GRAFİK DEĞİŞKENLERİ: TİPLENDİRME DÜZELTİLDİ ===
+  public durumDagilimiChartData: ChartData<'doughnut', number[], string> = {
+      labels: [], 
+      datasets: [ 
+          { data: [], label: 'Mülk Durumu' } 
+      ]
+  };
+  
+  public durumDagilimiChartOptions: ChartOptions<'doughnut'> = {
+    responsive: true,
+    maintainAspectRatio: false, 
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: {
+        callbacks: {
+          label: (context: TooltipItem<'doughnut'>) => { 
+            const label = context.label || '';
+            const value = context.parsed;
+            return `${label}: ${value} Adet`;
+          },
+        },
+      },
+    },
+  };
+  
+  // HATA ÇÖZÜMÜ: TS2322 hatası için kesin string literal tipi kullanılır.
+  public durumDagilimiChartType: 'doughnut' = 'doughnut'; 
+  // =================================================
 
   constructor(private portfoyService: PortfoyService) { }
 
@@ -40,33 +69,45 @@ export class DashboardComponent implements OnInit {
     this.getDashboardVerileri();
   }
 
-  /**
-   * PortfoyService üzerinden istatistik verilerini çeken metot.
-   */
   getDashboardVerileri(): void {
     this.isLoading = true;
     this.errorMessage = null;
 
     this.portfoyService.getIstatistikler().subscribe({
       next: (data) => {
-        // Veri başarıyla çekildi
         this.istatistikler = data;
         this.isLoading = false;
-        console.log("Dashboard Verileri Başarıyla Yüklendi:", data);
+        this.prepareDurumDagilimiChartData(data.durum_dagilimi); 
       },
       error: (err) => {
-        // Hata durumunda yüklenme durumunu kapat ve hatayı göster
         this.isLoading = false;
         this.istatistikler = undefined; 
-
         if (err.status === 0) {
             this.errorMessage = "Django sunucusuna ulaşılamadı. Lütfen sunucunun çalışıp çalışmadığını kontrol edin.";
         } else {
             this.errorMessage = "Veri yüklenirken bir hata oluştu: " + (err.message || 'Bilinmeyen Hata');
         }
-        console.error("Dashboard verileri yüklenirken hata oluştu:", err);
       }
     });
   }
 
+  private prepareDurumDagilimiChartData(dagilim: { durum: string; sayi: number }[]): void {
+    const labels: string[] = [];
+    const data: number[] = [];
+    
+    dagilim.forEach(item => {
+      labels.push(item.durum);
+      data.push(item.sayi);
+    });
+
+    this.durumDagilimiChartData = { 
+        labels: labels,
+        datasets: [{ 
+            data: data, 
+            label: 'Mülk Durumu', 
+            // Basit renk dizisi
+            backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6610f2']
+        }]
+    };
+  }
 }
