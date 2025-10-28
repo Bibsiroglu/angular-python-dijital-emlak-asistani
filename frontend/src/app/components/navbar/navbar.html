@@ -1,0 +1,58 @@
+<nav class="navbar navbar-expand-lg bg-light border-bottom fixed-top">
+    <div class="container-fluid">
+        <!-- Marka ve Logo -->
+        <a class="navbar-brand fw-bold text-primary" [routerLink]="['/']">
+            Dijital Emlak Asistanı
+        </a>
+
+        <!-- Hamburger Menü Butonu (Mobil) -->
+        <button class="navbar-toggler" 
+                type="button" 
+                data-bs-toggle="collapse" 
+                data-bs-target="#appNavbarContent" 
+                aria-controls="appNavbarContent" 
+                aria-expanded="false" 
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navigasyon İçeriği ve Collapse Alanı -->
+        <div class="collapse navbar-collapse" id="appNavbarContent">
+            
+            <!-- Sol Hizada Kalacak Linkler -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                
+                <li class="nav-item">
+                    <!-- 'active-link' sınıfını Angular kontrol edecek -->
+                    <a class="nav-link" 
+                       [routerLink]="['/']" 
+                       routerLinkActive="active" 
+                       [routerLinkActiveOptions]="{exact: true}"> 
+                        🏠 Mülk Listesi
+                    </a>
+                </li>
+                    
+                <li class="nav-item">
+                    <a class="nav-link" 
+                       [routerLink]="['/dashboard']" 
+                       routerLinkActive="active"> 
+                        📊 Dashboard
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Sağ Hizada Kalacak Arama Formu -->
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Mülk Ara" aria-label="Search"/>
+                <button class="btn btn-outline-primary" type="submit">Ara</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- 
+    ÖNEMLİ NOT:
+    Bu sabit Navbar'ın altında kalan içeriğin ezilmemesi için, 
+    ana sayfa içeriğinizi (örneğin app.component.html'deki router-outlet'i 
+    kapsayan div'i) üstten 56px (Navbar yüksekliği) boşluk ile başlatmayı unutmayın.
+-->

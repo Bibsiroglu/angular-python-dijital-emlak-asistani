@@ -1,14 +1,16 @@
-
 import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
+// Navbar'ı import edin
+import { NavbarComponent } from './components/navbar/navbar'; 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  templateUrl: './app.html',
-  styleUrl: './app.scss',
-  imports: [RouterOutlet, RouterLink], 
+  // NavbarComponent'i imports dizisine ekliyoruz
+  imports: [RouterOutlet, NavbarComponent], 
+  templateUrl: './app.html', // Veya template: '...'
+  styleUrl: './app.css'
 })
 export class AppComponent {
-  title = 'emlak-ui';
+  title = 'Emlak Asistani'; 
 }

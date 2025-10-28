@@ -55,6 +55,8 @@ class Mulk(models.Model):
     brut_m2 = models.IntegerField(blank=True, null=True)
     net_m2 = models.IntegerField(blank=True, null=True)
     oda_sayisi = models.CharField(max_length=10, blank=True, null=True)
+    bulundugu_kat = models.IntegerField(blank=True, null=True, verbose_name="Bulunduğu Kat")
+    bina_kat_sayisi = models.IntegerField(blank=True, null=True, verbose_name="Bina Toplam Kat Sayısı")
     
     adres = models.CharField(max_length=255)
     sehir = models.CharField(max_length=50)

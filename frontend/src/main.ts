@@ -1,9 +1,16 @@
-// src/main.ts
+// frontend/src/main.ts
+
+import { registerLocaleData } from '@angular/common';
+import localeTr from '@angular/common/locales/tr'; 
+
 import { bootstrapApplication } from '@angular/platform-browser';
-// Doğru isim AppComponent olmalı
-import { AppComponent } from './app/app'; // VEYA './app/app';
-
 import { appConfig } from './app/app.config';
+// Lütfen kendi AppComponent import'unuzu kontrol edin (bu örnekteki yol varsayımsaldır)
+import { AppComponent } from './app/app'; 
 
-bootstrapApplication(AppComponent, appConfig) // KRİTİK: AppComponent kullanıldığından emin olun
+// KRİTİK İŞLEM: Türkçe (tr) yerel ayarını Angular'a resmi olarak kaydediyoruz.
+registerLocaleData(localeTr, 'tr'); 
+
+
+bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));
