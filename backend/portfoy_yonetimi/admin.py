@@ -1,5 +1,4 @@
 from django.contrib import admin
-# Gerekli importlar - Sadece '.models' şeklinde göreceli içe aktarma kullanıldı.
 from .models import Musteri, Mulk, MulkFotografi, MusteriEvraki 
 from django.db.models import Avg, Count
 from django.utils.html import format_html
@@ -19,7 +18,6 @@ class MulkFotografiInline(admin.TabularInline):
     extra = 1
     # Dosya yüklemesini direkt olarak listeler, daha düzenli
     fields = ('foto', 'aciklama') 
-    # Mülk modelinde 'fotograflar' related_name'ini varsayarak
     fk_name = 'mulk' 
 
 class MusteriEvrakiInline(admin.TabularInline): 
@@ -28,9 +26,7 @@ class MusteriEvrakiInline(admin.TabularInline):
     """
     model = MusteriEvraki
     extra = 1
-    # 'evrak_turu' ve 'muhatap' alanları models.py'de düzeltilmiş olmalıdır
     fields = ('evrak_turu', 'evrak_tarihi', 'muhatap', 'dosya', 'aciklama')
-    # Musteri modelinde 'evraklar' related_name'ini varsayarak
     fk_name = 'musteri'
     
 # ------------------------------------------------
@@ -43,13 +39,13 @@ class MusteriAdmin(admin.ModelAdmin):
     """
     list_display = ('ad_soyad', 'telefon', 'eposta', 'get_evrak_sayisi')
     search_fields = ('ad_soyad', 'telefon', 'eposta', 'kimlik_numarasi')
-    inlines = [MusteriEvrakiInline] # <-- Evrak arayüzünü ekliyoruz
+    inlines = [MusteriEvrakiInline]
 
-    # Doğru tuple sintaksı kullanıldı.
     list_filter = ('musteri_turu', 'kayit_tarihi') 
 
     def get_evrak_sayisi(self, obj):
-        return obj.evraklar.count() # Modelinizdeki related_name'e göre ayarlayın
+        # Modelinizdeki related_name: 'evraklar'
+        return obj.evraklar.count() 
     get_evrak_sayisi.short_description = 'Evrak Sayısı'
 
 # ------------------------------------------------
@@ -57,34 +53,33 @@ class MusteriAdmin(admin.ModelAdmin):
 # ------------------------------------------------
 
 class MulkAdmin(admin.ModelAdmin):
+    
     # Bu metod, her mülkün fotoğraf sayısını list_display'de gösterir
     def get_foto_sayisi(self, obj):
-        return obj.fotograflar.count() # Mulk modelinizdeki related_name'e göre ayarlayın
+        # Modelinizdeki related_name: 'fotograflar'
+        return obj.fotograflar.count()
     get_foto_sayisi.short_description = 'Fotoğraf Sayısı'
 
     def get_sahipleri_listesi(self, obj):
-        # Mülkün sahiplerini virgülle ayırarak gösterir (Çoktan Çoğa ilişki olduğu için)
-        # models.py'de sahipleri alanı ManyToManyField olarak kabul edilir.
+        # Mülkün sahiplerini virgülle ayırarak gösterir
         return ", ".join([s.ad_soyad for s in obj.sahipleri.all()])
     get_sahipleri_listesi.short_description = 'Sahipleri'
 
-    # list_display'e fotoğraf sayısını ve sahipleri ekledik
     list_display = ('baslik', 'mülk_turu', 'fiyat', 'durum', 'sehir', 'get_foto_sayisi', 'get_sahipleri_listesi')
-    list_filter = ('mülk_turu', 'durum', 'sehir', 'ilce') # Mulk için filtreler
+    list_filter = ('mülk_turu', 'durum', 'sehir', 'ilce')
     search_fields = ('baslik', 'aciklama', 'adres')
-    inlines = [MulkFotografiInline] # <-- Galeri arayüzünü ekliyoruz
+    inlines = [MulkFotografiInline]
     
-    # filter_horizontal listesi doğru şekilde tanımlandı.
     filter_horizontal = ('sahipleri',) 
 
-    # Alan gruplarını ayırma (isteğe bağlı, okumayı kolaylaştırır)
+    # Alan gruplarını ayırma (tasinmaz_id çıkarıldı)
     fieldsets = (
         ('Mülk Temel Bilgileri', {
             'fields': ('baslik', 'aciklama', 'mülk_turu', 'durum', 'fiyat', 'sahipleri')
         }),
         ('Detaylı Özellikler', {
             'fields': ('brut_m2', 'net_m2', 'oda_sayisi', 'bulundugu_kat', 'bina_kat_sayisi'),
-            'classes': ('collapse',), # Bu alanı varsayılan olarak gizler
+            'classes': ('collapse',),
         }),
         ('Konum Bilgileri', {
             'fields': ('sehir', 'ilce', 'adres'),
@@ -105,23 +100,21 @@ class MulkAdmin(admin.ModelAdmin):
         
         # Template'e gönderilecek veriyi hazırla
         context = dict(
-            # super metodu ile gelen admin site context'ini korur (sidebar, header vb.)
             self.admin_site.each_context(request),
             toplam_mulk=toplam_mulk,
-            # Formatlama kontrolü
+            # Fiyatı TL olarak formatla
             ortalama_fiyat=f"{ortalama_fiyat_sonuc if ortalama_fiyat_sonuc is not None else 0:,.2f} TL",
             tur_dagilimi=tur_dagilimi,
-            title="Mülk Yönetimi İstatistik Paneli" # Sayfa başlığını belirler
+            title="Mülk Yönetimi İstatistik Paneli"
         )
         
-        # Örnek: 'admin/dashboard.html' template'ini render et
+        # Admin dashboard'u için varsayılan bir template adını kullanır.
         return render(request, "admin/dashboard.html", context)
 
     # Admin panelindeki URL'leri özelleştirme
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-            # Yeni bir URL yolu: /admin/app_adi/mulk/dashboard/
             path('dashboard/', self.admin_site.admin_view(self.istatistik_dashboard_view), name='mulk_dashboard'),
         ]
         return custom_urls + urls
@@ -130,10 +123,5 @@ class MulkAdmin(admin.ModelAdmin):
 # 5. Modelleri Admin'e Kaydetme
 # ------------------------------------------------
 
-# Musteri modelini MusteriAdmin ile kaydet
 admin.site.register(Musteri, MusteriAdmin) 
-# Mulk modelini MulkAdmin ile kaydet
 admin.site.register(Mulk, MulkAdmin)
-
-# MulkFotografi ve MusteriEvraki, ilgili Admin sınıfları içinde Inline olarak 
-# yönetildiği için ayrı ayrı kaydetmeye gerek yoktur.

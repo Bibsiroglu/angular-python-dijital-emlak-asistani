@@ -1,6 +1,6 @@
-# backend/portfoy_yonetimi/models.py
-
 from django.db import models
+from django.core.validators import MinValueValidator # Kullanılmadığı için kaldırılabilir, ama tutarlılık için bıraktım
+from decimal import Decimal # Kullanılmadığı için kaldırılabilir, ama tutarlılık için bıraktım
 
 # ===============================================
 # MÜŞTERİ YÖNETİMİ
@@ -15,36 +15,42 @@ class Musteri(models.Model):
         ('YATIRIMCI', 'Yatırımcı'),
     )
 
-    ad_soyad = models.CharField(max_length=100)
-    telefon = models.CharField(max_length=15, unique=True)
-    eposta = models.EmailField(max_length=100, blank=True, null=True)
-    musteri_turu = models.CharField(max_length=10, choices=TUR_SECENEKLERI, default='ALICI')
-    kimlik_numarasi = models.CharField(max_length=20, blank=True, null=True)
-    ikametgah_adresi = models.TextField(max_length=255, blank=True, null=True)
-    iban = models.CharField(max_length=34, blank=True, null=True)
-    kayit_tarihi = models.DateTimeField(auto_now_add=True)
-    notlar = models.TextField(blank=True, null=True)
+    ad_soyad = models.CharField(max_length=100, verbose_name="Ad Soyad")
+    telefon = models.CharField(max_length=15, unique=True, verbose_name="Telefon")
+    eposta = models.EmailField(max_length=100, blank=True, null=True, verbose_name="E-posta")
+    musteri_turu = models.CharField(max_length=10, choices=TUR_SECENEKLERI, default='ALICI', verbose_name="Müşteri Türü")
+    kimlik_numarasi = models.CharField(max_length=20, blank=True, null=True, verbose_name="Kimlik Numarası")
+    
+    ikametgah_adresi = models.TextField(blank=True, null=True, verbose_name="İkametgah Adresi") 
+    
+    iban = models.CharField(max_length=34, blank=True, null=True, verbose_name="IBAN")
+    kayit_tarihi = models.DateTimeField(auto_now_add=True, verbose_name="Kayıt Tarihi")
+    notlar = models.TextField(blank=True, null=True, verbose_name="Notlar")
+
+    class Meta:
+        verbose_name = "Müşteri"
+        verbose_name_plural = "Müşteriler"
 
     def __str__(self):
-        return f"{self.ad_soyad} ({self.musteri_turu})"
+        return f"{self.ad_soyad} ({self.get_musteri_turu_display()})"
 
 # ===============================================
-# MÜŞTERİ EVRAK YÖNETİMİ (Yeni Model)
+# MÜŞTERİ EVRAK YÖNETİMİ
 # ===============================================
 class MusteriEvraki(models.Model):
     EVRAK_TURLERI = (
-        ('KIRA SOZLESMESI', 'Kira Sözleşmesi'),
+        ('KIRA_SOZLESMESI', 'Kira Sözleşmesi'),
         ('PROTOKOL', 'Protokol'),
-        ('SATIS SOZLESMESI', 'Satış Sözleşmesi'),
+        ('SATIS_SOZLESMESI', 'Satış Sözleşmesi'),
         ('SENET', 'Senet'),
     )
     musteri = models.ForeignKey(
         Musteri, 
         on_delete=models.CASCADE, 
-        related_name='evraklar'
+        related_name='evraklar',
+        verbose_name="Müşteri (Evrak Sahibi)"
     )
     
-    # Evrağın düzenlenme/geçerlilik tarihi
     evrak_tarihi = models.DateField(
         blank=True, 
         null=True, 
@@ -52,27 +58,34 @@ class MusteriEvraki(models.Model):
         help_text="Sözleşme veya evrağın düzenlenme tarihi"
     )
     
-    # Gerçek dosya yükleme alanı (PDF, JPG vb.)
     dosya = models.FileField(
         upload_to='musteri_evraklari/', 
         verbose_name="Evrak Dosyası",
         help_text="Sözleşme, tapu fotokopisi vb. evrak dosyası"
     )
 
-    # Evrak türü (Opsiyonel, ama faydalı olabilir)
-    evrak_turu = models.CharField(max_length=20, choices=EVRAK_TURLERI)
+    evrak_turu = models.CharField(max_length=20, choices=EVRAK_TURLERI, verbose_name="Evrak Türü")
 
-    muhatap = models.ForeignKey(Musteri, on_delete=models.SET_NULL, null=True, blank=True, related_name='muhatap')
+    muhatap = models.ForeignKey(
+        Musteri, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='ilgili_oldugu_evraklar',
+        verbose_name="Muhatap (İlgili Kişi)"
+    )
     
-    aciklama = models.CharField(max_length=255, blank=True, null=True)
-    yuklenme_tarihi = models.DateTimeField(auto_now_add=True)
+    aciklama = models.CharField(max_length=255, blank=True, null=True, verbose_name="Açıklama")
+    yuklenme_tarihi = models.DateTimeField(auto_now_add=True, verbose_name="Yüklenme Tarihi")
     
     def __str__(self):
-        return f"{self.musteri.ad_soyad} - {self.aciklama or 'Evrak'}"
+        return f"{self.musteri.ad_soyad} - {self.aciklama or self.get_evrak_turu_display()}"
         
     class Meta:
         verbose_name = "Müşteri Evrağı"
         verbose_name_plural = "Müşteri Evrakları"
+
+
 # ===============================================
 # PORTFÖY YÖNETİMİ (Mülkler)
 # ===============================================
@@ -88,26 +101,30 @@ class Mulk(models.Model):
     DURUM_SECENEKLERI = (
         ('SATILIK', 'Satılık'),
         ('KIRALIK', 'Kiralık'),
+        ('DEVREN_KIRALIK', 'Devren Kiralık'),
         ('SATILDI', 'Satıldı'),
         ('KIRALANDI', 'Kiralandı'),
         ('PASIF', 'Pasif'),
     )
 
-    baslik = models.CharField(max_length=255)
-    aciklama = models.TextField()
-    mülk_turu = models.CharField(max_length=10, choices=TUR_SECENEKLERI)
-    durum = models.CharField(max_length=10, choices=DURUM_SECENEKLERI, default='SATILIK')
+    baslik = models.CharField(max_length=255, verbose_name="Başlık")
+    aciklama = models.TextField(verbose_name="Açıklama")
+    mülk_turu = models.CharField(max_length=10, choices=TUR_SECENEKLERI, verbose_name="Mülk Türü")
     
-    fiyat = models.DecimalField(max_digits=15, decimal_places=2)
-    brut_m2 = models.IntegerField(blank=True, null=True)
-    net_m2 = models.IntegerField(blank=True, null=True)
-    oda_sayisi = models.CharField(max_length=10, blank=True, null=True)
+    durum = models.CharField(max_length=20, choices=DURUM_SECENEKLERI, default='SATILIK', verbose_name="Durum") 
+    
+    fiyat = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Fiyat")
+    
+    brut_m2 = models.IntegerField(blank=True, null=True, verbose_name="Brüt M²")
+    net_m2 = models.IntegerField(blank=True, null=True, verbose_name="Net M²")
+    
+    oda_sayisi = models.CharField(max_length=10, blank=True, null=True, verbose_name="Oda Sayısı")
     bulundugu_kat = models.IntegerField(blank=True, null=True, verbose_name="Bulunduğu Kat")
     bina_kat_sayisi = models.IntegerField(blank=True, null=True, verbose_name="Bina Toplam Kat Sayısı")
     
-    adres = models.CharField(max_length=255)
-    sehir = models.CharField(max_length=50)
-    ilce = models.CharField(max_length=50)
+    adres = models.CharField(max_length=255, verbose_name="Adres Detayı")
+    sehir = models.CharField(max_length=50, verbose_name="Şehir")
+    ilce = models.CharField(max_length=50, verbose_name="İlçe")
     
     # Mülk sahibi (Satıcı/Kiralayan) ile ilişkilendirme
     sahipleri = models.ManyToManyField(
@@ -116,29 +133,35 @@ class Mulk(models.Model):
         blank=True, 
         verbose_name="Mülk Sahipleri"
     )
-    kayit_tarihi = models.DateTimeField(auto_now_add=True)
-    guncelleme_tarihi = models.DateTimeField(auto_now=True)
+    kayit_tarihi = models.DateTimeField(auto_now_add=True, verbose_name="Kayıt Tarihi")
+    guncelleme_tarihi = models.DateTimeField(auto_now=True, verbose_name="Güncelleme Tarihi")
+
+    class Meta:
+        verbose_name = "Mülk"
+        verbose_name_plural = "Mülkler"
 
     def __str__(self):
         return f"{self.baslik} ({self.get_durum_display()})"
     
 
 # ===============================================
-# 3. YENİ FOTOĞRAF MODELİ (Mulk sınıfının dışında!)
+# FOTOĞRAF MODELİ
 # ===============================================
 class MulkFotografi(models.Model):
     mulk = models.ForeignKey(Mulk, 
-                             on_delete=models.CASCADE, 
-                             related_name='fotograflar') # Bu fotoğrafların hangi mülke ait olduğunu belirtir.
-                             
-    foto = models.ImageField(upload_to='mulk_fotograflari/') # Gerçek resim dosyası
+                            on_delete=models.CASCADE, 
+                            related_name='fotograflar',
+                            verbose_name="İlgili Mülk")
+                            
+    foto = models.ImageField(upload_to='mulk_fotograflari/', verbose_name="Fotoğraf Dosyası") # Gerçek resim dosyası
     
-    aciklama = models.CharField(max_length=255, blank=True, null=True) # Opsiyonel açıklama
+    aciklama = models.CharField(max_length=255, blank=True, null=True, verbose_name="Açıklama") # Opsiyonel açıklama
     
-    varsayilan = models.BooleanField(default=False) # Eğer varsa, ilk fotoğrafı belirlemek için
+    varsayilan = models.BooleanField(default=False, verbose_name="Varsayılan Fotoğraf") # Eğer varsa, ilk fotoğrafı belirlemek için
     
     def __str__(self):
         return f"{self.mulk.baslik} - Fotoğraf {self.id}"
     
     class Meta:
+        verbose_name = "Mülk Fotoğrafı"
         verbose_name_plural = "Mülk Fotoğrafları"
