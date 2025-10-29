@@ -1,0 +1,12 @@
+/* 1. Dashboard Konteyner Boşluğu (Navbar Sabitleme İçin) */
+.dashboard-container {
+    padding-top: 70px; /* Başlığın görünmesi için boşluk artırıldı */
+    padding-bottom: 50px;
+}
+
+/* Başlık üzerindeki default margin/padding'i düzeltmek için */
+.dashboard-container h1 {
+    margin-top: 0 !important;
+    margin-bottom: 1.5rem !important; /* Başlık ile kartlar arasına boşluk */
+}
+/* ... geri kalan CSS kodları ... */

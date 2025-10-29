@@ -19,13 +19,60 @@ class Musteri(models.Model):
     telefon = models.CharField(max_length=15, unique=True)
     eposta = models.EmailField(max_length=100, blank=True, null=True)
     musteri_turu = models.CharField(max_length=10, choices=TUR_SECENEKLERI, default='ALICI')
+    kimlik_numarasi = models.CharField(max_length=20, blank=True, null=True)
+    ikametgah_adresi = models.TextField(max_length=255, blank=True, null=True)
+    iban = models.CharField(max_length=34, blank=True, null=True)
     kayit_tarihi = models.DateTimeField(auto_now_add=True)
     notlar = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.ad_soyad} ({self.musteri_turu})"
 
+# ===============================================
+# MÜŞTERİ EVRAK YÖNETİMİ (Yeni Model)
+# ===============================================
+class MusteriEvraki(models.Model):
+    EVRAK_TURLERI = (
+        ('KIRA SOZLESMESI', 'Kira Sözleşmesi'),
+        ('PROTOKOL', 'Protokol'),
+        ('SATIS SOZLESMESI', 'Satış Sözleşmesi'),
+        ('SENET', 'Senet'),
+    )
+    musteri = models.ForeignKey(
+        Musteri, 
+        on_delete=models.CASCADE, 
+        related_name='evraklar'
+    )
+    
+    # Evrağın düzenlenme/geçerlilik tarihi
+    evrak_tarihi = models.DateField(
+        blank=True, 
+        null=True, 
+        verbose_name="Evrak Tarihi",
+        help_text="Sözleşme veya evrağın düzenlenme tarihi"
+    )
+    
+    # Gerçek dosya yükleme alanı (PDF, JPG vb.)
+    dosya = models.FileField(
+        upload_to='musteri_evraklari/', 
+        verbose_name="Evrak Dosyası",
+        help_text="Sözleşme, tapu fotokopisi vb. evrak dosyası"
+    )
 
+    # Evrak türü (Opsiyonel, ama faydalı olabilir)
+    evrak_turu = models.CharField(max_length=20, choices=EVRAK_TURLERI)
+
+    muhatap = models.ForeignKey(Musteri, on_delete=models.SET_NULL, null=True, blank=True, related_name='muhatap')
+    
+    aciklama = models.CharField(max_length=255, blank=True, null=True)
+    yuklenme_tarihi = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.musteri.ad_soyad} - {self.aciklama or 'Evrak'}"
+        
+    class Meta:
+        verbose_name = "Müşteri Evrağı"
+        verbose_name_plural = "Müşteri Evrakları"
 # ===============================================
 # PORTFÖY YÖNETİMİ (Mülkler)
 # ===============================================
@@ -63,8 +110,12 @@ class Mulk(models.Model):
     ilce = models.CharField(max_length=50)
     
     # Mülk sahibi (Satıcı/Kiralayan) ile ilişkilendirme
-    sahip = models.ForeignKey(Musteri, on_delete=models.SET_NULL, null=True, blank=True, related_name='sahip_oldugu_mulkler')
-    
+    sahipleri = models.ManyToManyField(
+        Musteri, 
+        related_name='sahip_oldugu_mulkler', 
+        blank=True, 
+        verbose_name="Mülk Sahipleri"
+    )
     kayit_tarihi = models.DateTimeField(auto_now_add=True)
     guncelleme_tarihi = models.DateTimeField(auto_now=True)
 

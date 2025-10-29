@@ -1,60 +1,152 @@
-<div class="dashboard-container">
-    <h2>Emlak Portföy Yönetimi - İstatistiksel Özet</h2>
+<!-- Bootstrap container ile içeriği hizala -->
+<div class="container-fluid dashboard-container">
     
-    <div *ngIf="isLoading" class="loading-message">
-        <p>Veriler yükleniyor, lütfen bekleyin...</p>
+    <!-- Sayfa Başlığı -->
+    <h1 class="my-4 fw-light text-secondary">
+        Emlak Portföy Yönetimi - İstatistiksel Özet
+    </h1>
+
+    <!-- Yükleniyor Mesajı -->
+    <div *ngIf="isLoading" class="alert alert-info text-center" role="alert">
+        <div class="spinner-border text-primary me-2" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        Veriler yükleniyor, lütfen bekleyin...
     </div>
 
-    <div *ngIf="errorMessage" class="error-box">
+    <!-- Hata Mesajı -->
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
         Hata: {{ errorMessage }}
     </div>
 
-    <div *ngIf="istatistikler && !errorMessage" class="card-grid">
-        
-        <div class="card card-primary">
-            <h3>Toplam Mülk</h3>
-            <p class="value">{{ istatistikler.toplam_mulk }}</p>
-            <p class="label">Aktif Envanter</p>
-        </div>
-        
-        <div class="card card-secondary">
-            <h3>Ortalama Fiyat</h3>
-            <p class="value">{{ istatistikler.ortalama_fiyat | currency:'TRY':'symbol':'1.0-2':'tr' }}</p>
-            <p class="label">Envanter Ortalaması</p>
-        </div>
-        
-        <div class="card card-tertiary">
-            <h3>Toplam Değer</h3>
-            <p class="value">{{ istatistikler.toplam_envanter_degeri | currency:'TRY':'symbol':'1.0-0':'tr' }}</p>
-            <p class="label">Tahmini Pazar Değeri</p>
-        </div>
-    </div>
-    
-    <div *ngIf="istatistikler && !errorMessage" class="chart-section">
-        <h3>Mülk Durumu Dağılımı</h3>
-        
-        <div class="chart-wrapper">
-            <canvas *ngIf="durumDagilimiChartData.datasets[0].data.length > 0"
-                    baseChart
-                    [data]="durumDagilimiChartData" 
-                    [options]="durumDagilimiChartOptions"
-                    [type]="durumDagilimiChartType">
-            </canvas>
-            <p *ngIf="!durumDagilimiChartData.datasets[0].data.length" class="no-data-message">
-                Grafik verisi bulunamadı.
-            </p>
-        </div>
-        
-        <ul class="status-list">
-            <li *ngFor="let item of istatistikler.durum_dagilimi">
-                <span class="status-name">{{ item.durum }}</span>
-                <span class="status-count">{{ item.sayi }} Adet</span>
-            </li>
-        </ul>
-    </div>
+    <!-- Dashboard İçeriği (Veriler Yüklendiğinde Göster) -->
+    <div *ngIf="istatistikler && !errorMessage">
 
-    <div class="action-links">
-        <a [routerLink]="['/mulkler']" class="btn-action">Tüm Mülkleri Gör</a>
-    </div>
+        <!-- 1. ANA METRİK KARTLARI (Bootstrap Row/Col) -->
+        <!-- Bu satır kartları yan yana dizer (4 kart için col-xl-3) -->
+        <div class="row mb-5">
+            
+            <!-- Toplam Mülk Kartı -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card card-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Toplam Mülk</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ istatistikler.toplam_mulk }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <span class="fs-3">🏡</span> 
+                            </div>
+                            <p class="label">Aktif Envanter</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Ortalama Fiyat Kartı (Pipe Düzeltmeli) -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card card-secondary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Ortalama Fiyat</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ istatistikler.ortalama_fiyat | currency:'TRY':'symbol':'1.0-2':'tr' }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <span class="fs-3">💵</span> 
+                            </div>
+                            <p class="label">Envanter Ortalaması</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toplam Değer Kartı (Pipe Düzeltmeli) -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card card-tertiary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-tertiary text-uppercase mb-1">Toplam Değer</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ istatistikler.toplam_envanter_degeri | currency:'TRY':'symbol':'1.0-0':'tr' }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <span class="fs-3">💰</span>
+                            </div>
+                            <p class="label">Tahmini Pazar Değeri</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Boş/Ek Kart (Trendler için) -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card bg-light shadow-sm h-100 py-2 border-primary">
+                    <div class="card-body text-center">
+                        <p class="text-primary mb-0 mt-3">Yeni Analiz Alanı</p>
+                        <small>Daha sonra eklenecek trendler.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. GRAFİK VE LİSTE BÖLÜMÜ (İki Sütunlu Düzen) -->
+        <!-- Bu satır Grafik ve Durum Listesini yan yana dizer -->
+        <div class="row">
+            
+            <!-- Sol Sütun: Grafik (Geniş Alan: col-lg-8) -->
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Mülk Durumu Dağılımı</h6>
+                    </div>
+                    <div class="card-body">
+                        <!-- Grafik Alanı ve Görünürlük Kontrolü -->
+                        <div class="chart-wrapper"> 
+                            <!-- durumlardaki sıfır hatasını önlemek için kontrol -->
+                            <canvas *ngIf="durumDagilimiChartData.datasets[0].data.length > 0"
+                                baseChart 
+                                [data]="durumDagilimiChartData" 
+                                [options]="durumDagilimiChartOptions"
+                                [type]="durumDagilimiChartType">
+                            </canvas>
+                            <p *ngIf="durumDagilimiChartData.datasets[0].data.length === 0" class="no-data-message text-center text-muted">
+                                Grafik verisi bulunamadı. Lütfen mülk ekleyin.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ Sütun: Durum Listesi ve Aksiyonlar (Dar Alan: col-lg-4) -->
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Detaylı Durum Özeti</h6>
+                    </div>
+                    <div class="card-body">
+                        <!-- Durum Listesi -->
+                        <ul class="list-group status-list">
+                            <li *ngFor="let item of istatistikler.durum_dagilimi" class="list-group-item d-flex justify-content-between align-items-center">
+                                <span class="status-name">{{ item.durum }}</span>
+                                <span class="badge bg-primary rounded-pill">{{ item.sayi }} Adet</span>
+                            </li>
+                        </ul>
+                        
+                        <!-- Hızlı Aksiyon Butonu -->
+                        <div class="mt-4 text-center">
+                            <a [routerLink]="['/mulkler']" class="btn btn-primary btn-icon-split">
+                                <span class="text">Tüm Mülkleri Gör</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
