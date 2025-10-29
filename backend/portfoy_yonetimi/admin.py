@@ -2,7 +2,8 @@ from django.contrib import admin
 from .models import Musteri, Mulk, MulkFotografi, MusteriEvraki 
 from django.db.models import Avg, Count
 from django.utils.html import format_html
-from django.urls import path
+# Gerekli olan reverse fonksiyonu buraya import edildi.
+from django.urls import path, reverse 
 from django.shortcuts import render 
 from decimal import Decimal
 
@@ -60,10 +61,27 @@ class MulkAdmin(admin.ModelAdmin):
         return obj.fotograflar.count()
     get_foto_sayisi.short_description = 'Fotoğraf Sayısı'
 
+    # Buraya yerleştirilen, tıklanabilir sahipleri gösteren metod
     def get_sahipleri_listesi(self, obj):
-        # Mülkün sahiplerini virgülle ayırarak gösterir
-        return ", ".join([s.ad_soyad for s in obj.sahipleri.all()])
+        """
+        Mülkün sahiplerini tıklanabilir linkler halinde gösterir.
+        """
+        sahip_linkleri = []
+        for sahip in obj.sahipleri.all():
+            # Musteri modelinin detay URL'sini oluştur
+            # URL formatı: 'admin:appname_modelname_change'
+            url = reverse('admin:portfoy_yonetimi_musteri_change', args=[sahip.pk])
+            # HTML formatında linki oluştur
+            sahip_linkleri.append(format_html('<a href="{}">{}</a>', url, sahip.ad_soyad))
+        
+        return format_html(", ".join(sahip_linkleri))
+        
     get_sahipleri_listesi.short_description = 'Sahipleri'
+    # Bu özelliği eklemek ZORUNLUDUR, aksi halde HTML güvenli olarak işlenmez
+    get_sahipleri_listesi.allow_tags = True
+    # Sıralama için admin alanını ayarla
+    get_sahipleri_listesi.admin_order_field = 'sahipleri' 
+
 
     list_display = ('baslik', 'mülk_turu', 'fiyat', 'durum', 'sehir', 'get_foto_sayisi', 'get_sahipleri_listesi')
     list_filter = ('mülk_turu', 'durum', 'sehir', 'ilce')
