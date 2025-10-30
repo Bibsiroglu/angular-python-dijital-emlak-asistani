@@ -38,7 +38,7 @@ class MusteriAdmin(admin.ModelAdmin):
     """
     Müşteri modelini yönetir ve evraklarını inline olarak gösterir.
     """
-    list_display = ('ad_soyad', 'telefon', 'eposta', 'get_evrak_sayisi')
+    list_display = ('ad_soyad', 'telefon', 'musteri_turu', 'get_evrak_sayisi')
     search_fields = ('ad_soyad', 'telefon', 'eposta', 'kimlik_numarasi')
     inlines = [MusteriEvrakiInline]
 
@@ -83,7 +83,7 @@ class MulkAdmin(admin.ModelAdmin):
     get_sahipleri_listesi.admin_order_field = 'sahipleri' 
 
 
-    list_display = ('baslik', 'mülk_turu', 'fiyat', 'durum', 'sehir', 'get_foto_sayisi', 'get_sahipleri_listesi')
+    list_display = ('baslik', 'mülk_turu', 'fiyat', 'durum', 'sehir', 'esya_durumu', 'get_sahipleri_listesi')
     list_filter = ('mülk_turu', 'durum', 'sehir', 'ilce')
     search_fields = ('baslik', 'aciklama', 'adres')
     inlines = [MulkFotografiInline]
