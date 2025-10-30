@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'rest_framework', # <<< Bu olmalı
     
     # Kendi uygulamanız: En güvenlisi AppConfig yolunu kullanmaktır
-    'portfoy_yonetimi',
+    'portfoy_yonetimi.apps.PortfoyYonetimiConfig', 
+    'musteri_yonetimi.apps.MusteriYonetimiConfig',
+    'evrak_yonetimi.apps.EvrakYonetimiConfig',
 ]
 
 MIDDLEWARE = [
