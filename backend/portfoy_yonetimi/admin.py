@@ -38,7 +38,7 @@ class MusteriAdmin(admin.ModelAdmin):
     """
     Müşteri modelini yönetir ve evraklarını inline olarak gösterir.
     """
-    list_display = ('ad_soyad', 'telefon', 'musteri_turu', 'get_evrak_sayisi')
+    list_display = ('ad_soyad', 'telefon', 'eposta', 'get_evrak_sayisi')
     search_fields = ('ad_soyad', 'telefon', 'eposta', 'kimlik_numarasi')
     inlines = [MusteriEvrakiInline]
 
@@ -82,8 +82,19 @@ class MulkAdmin(admin.ModelAdmin):
     # Sıralama için admin alanını ayarla
     get_sahipleri_listesi.admin_order_field = 'sahipleri' 
 
+    def get_konut_tipi_display(self, obj):
+       if obj.mülk_turu == 'KONUT':
+            return obj.get_konut_tipi_display()
+       return '-'
+    get_konut_tipi_display.short_description = 'Konut Tipi'
 
-    list_display = ('baslik', 'mülk_turu', 'fiyat', 'durum', 'sehir', 'esya_durumu', 'get_sahipleri_listesi')
+    def get_isyeri_tipi_display(self, obj):
+       if obj.mülk_turu == 'ISYERI':
+            return obj.get_isyeri_tipi_display()
+       return '-'
+    get_isyeri_tipi_display.short_description = 'İsyeri Tipi'
+
+    list_display = ('baslik', 'mülk_turu','get_konut_tipi_display','get_isyeri_tipi_display', 'fiyat', 'durum', 'sehir', 'get_foto_sayisi', 'get_sahipleri_listesi')
     list_filter = ('mülk_turu', 'durum', 'sehir', 'ilce')
     search_fields = ('baslik', 'aciklama', 'adres')
     inlines = [MulkFotografiInline]
@@ -93,7 +104,7 @@ class MulkAdmin(admin.ModelAdmin):
     # Alan gruplarını ayırma (tasinmaz_id çıkarıldı)
     fieldsets = (
         ('Mülk Temel Bilgileri', {
-            'fields': ('baslik', 'aciklama', 'mülk_turu', 'durum', 'fiyat', 'sahipleri')
+            'fields': ('baslik', 'aciklama', 'mülk_turu', 'konut_tipi', 'isyeri_tipi', 'durum', 'fiyat', 'sahipleri')
         }),
         ('Detaylı Özellikler', {
             'fields': ('brut_m2', 'net_m2', 'oda_sayisi', 'bulundugu_kat', 'bina_kat_sayisi'),
@@ -103,6 +114,14 @@ class MulkAdmin(admin.ModelAdmin):
             'fields': ('sehir', 'ilce', 'adres'),
         }),
     )
+
+    class Media:
+        """
+        Django Admin'e bu form yüklenirken toggle_konut_tipi.js dosyasını yüklemesini söyler.
+        """
+        js = (
+            'portfoy_yonetimi/js/toggle_konut_tipi.js', 
+        )
     
     # ------------------------------------------------
     # 4. İstatistiksel Dashboard View (Admin içinde)
