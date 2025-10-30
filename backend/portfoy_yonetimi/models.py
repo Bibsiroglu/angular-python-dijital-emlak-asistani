@@ -113,7 +113,6 @@ class Mulk(models.Model):
         ('VILLA', 'Villa'),
         ('MUSTAKİL', 'Mustakil')
     )
-<<<<<<< HEAD
 
     ISYERI_TIPI = (
         ('OFİS', 'Ofis'),
@@ -121,17 +120,12 @@ class Mulk(models.Model):
         ('DEPO', 'Depo'),
         ('FABRİKA', 'Fabrika')
     )  
-=======
->>>>>>> a1f25bef153a3963e887b33ac4d29395bc21cba0
 
     baslik = models.CharField(max_length=255, verbose_name="Başlık")
     aciklama = models.TextField(verbose_name="Açıklama")
     mülk_turu = models.CharField(max_length=10, choices=TUR_SECENEKLERI, verbose_name="Mülk Türü")
     konut_tipi = models.CharField(max_length=10,choices=KONUT_TIPI, verbose_name='Konut Tipi')
-<<<<<<< HEAD
     isyeri_tipi = models.CharField(max_length=10,choices=ISYERI_TIPI, verbose_name='İsyeri Tipi')
-=======
->>>>>>> a1f25bef153a3963e887b33ac4d29395bc21cba0
     durum = models.CharField(max_length=20, choices=DURUM_SECENEKLERI, default='SATILIK', verbose_name="Durum") 
     
     fiyat = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Fiyat")

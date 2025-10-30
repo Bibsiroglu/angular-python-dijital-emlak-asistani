@@ -88,7 +88,6 @@ class MulkAdmin(admin.ModelAdmin):
        return '-'
     get_konut_tipi_display.short_description = 'Konut Tipi'
 
-<<<<<<< HEAD
     def get_isyeri_tipi_display(self, obj):
        if obj.mülk_turu == 'ISYERI':
             return obj.get_isyeri_tipi_display()
@@ -96,9 +95,6 @@ class MulkAdmin(admin.ModelAdmin):
     get_isyeri_tipi_display.short_description = 'İsyeri Tipi'
 
     list_display = ('baslik', 'mülk_turu','get_konut_tipi_display','get_isyeri_tipi_display', 'fiyat', 'durum', 'sehir', 'get_foto_sayisi', 'get_sahipleri_listesi')
-=======
-    list_display = ('baslik', 'mülk_turu','get_konut_tipi_display', 'fiyat', 'durum', 'sehir', 'get_foto_sayisi', 'get_sahipleri_listesi')
->>>>>>> a1f25bef153a3963e887b33ac4d29395bc21cba0
     list_filter = ('mülk_turu', 'durum', 'sehir', 'ilce')
     search_fields = ('baslik', 'aciklama', 'adres')
     inlines = [MulkFotografiInline]
@@ -108,11 +104,7 @@ class MulkAdmin(admin.ModelAdmin):
     # Alan gruplarını ayırma (tasinmaz_id çıkarıldı)
     fieldsets = (
         ('Mülk Temel Bilgileri', {
-<<<<<<< HEAD
             'fields': ('baslik', 'aciklama', 'mülk_turu', 'konut_tipi', 'isyeri_tipi', 'durum', 'fiyat', 'sahipleri')
-=======
-            'fields': ('baslik', 'aciklama', 'mülk_turu', 'konut_tipi', 'durum', 'fiyat', 'sahipleri')
->>>>>>> a1f25bef153a3963e887b33ac4d29395bc21cba0
         }),
         ('Detaylı Özellikler', {
             'fields': ('brut_m2', 'net_m2', 'oda_sayisi', 'bulundugu_kat', 'bina_kat_sayisi'),
